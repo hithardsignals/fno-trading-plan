@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FnO Weekly Trading Plan — Investor Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060913;
+    --surface: rgba(20, 27, 48, 0.86);
+    --surface-border: rgba(255, 255, 255, 0.14);
+    --c1: #38bdf8;
+    --c2: #c084fc;
+    --c3: #f472b6;
+    --ivory: #f8fafc;
+    --muted: #d7deef;
+    --green: #4ade80;
+    --red: #f87171;
+  }
+
+  * { box-sizing: border-box; }
+  
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    background: var(--bg); color: var(--ivory);
+    font-family: 'Inter', Arial, sans-serif;
+    overflow: hidden; 
+  }
+
+  .display { font-family: 'Space Grotesk', Arial, sans-serif; }
+
+  .blob {
+    position: fixed; border-radius: 50%; filter: blur(130px); opacity: 0.15; z-index: 0; pointer-events: none;
+    -webkit-transform: translateZ(0); transform: translateZ(0); will-change: transform;
+  }
+  .blob1 { width: 600px; height: 600px; background: var(--c1); top: -200px; left: -200px; animation: float1 20s ease-in-out infinite; }
+  .blob2 { width: 550px; height: 550px; background: var(--c2); top: 25%; right: -200px; animation: float2 24s ease-in-out infinite; }
+  .blob3 { width: 500px; height: 500px; background: var(--c3); bottom: -200px; left: 10%; animation: float3 22s ease-in-out infinite; }
+
+  @keyframes float1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(40px, 60px); } }
+  @keyframes float2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-50px, 50px); } }
+  @keyframes float3 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(40px, -50px); } }
+
+  .grid-overlay {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  .deck-container {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100); /* JS-measured fallback, matches section.slide below */
+    height: 100svh; /* stable height (assumes toolbar visible) — never changes mid-scroll, unlike 100dvh */
+    width: 100vw;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    position: relative;
+    z-index: 1;
+    -ms-overflow-style: none; scrollbar-width: none;
+  }
+  .deck-container::-webkit-scrollbar { display: none; }
+
+  section.slide {
+    min-height: 100vh;
+    min-height: calc(var(--vh, 1vh) * 100);
+    min-height: 100svh; /* stable across scroll direction — see .deck-container note above; dvh caused the same slide to snap at a different offset depending on scroll direction because the browser toolbar (and thus dvh) changes between scrolling up vs down */
+    width: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 50px 24px 24px 24px;
+    position: relative;
+  }
+  
+  .slide-content {
+    max-width: 860px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* Slide Loading / Intersection Animation Classes */
+  .anim-item {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  section.slide.active .anim-item {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Stagger delays */
+  .delay-1 { transition-delay: 0.1s; }
+  .delay-2 { transition-delay: 0.2s; }
+  .delay-3 { transition-delay: 0.3s; }
+  .delay-4 { transition-delay: 0.4s; }
+  .delay-5 { transition-delay: 0.5s; }
+
+  .eyebrow {
+    text-align: center; font-size: 13px; letter-spacing: 3.5px; text-transform: uppercase; font-weight: 700;
+    margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 12px;
+    background: linear-gradient(90deg, var(--c1), var(--c2)); -webkit-background-clip: text; color: transparent;
+  }
+  .eyebrow::before, .eyebrow::after { content: ''; width: 26px; height: 1px; background: linear-gradient(90deg, var(--c1), var(--c2)); opacity: 0.6; }
+
+  h1.display { text-align: center; font-weight: 700; font-size: 44px; margin: 0; color: var(--ivory); letter-spacing: -0.5px; }
+  h1.display .grad {
+    display: block; font-weight: 800; font-size: 58px; line-height: 1.15; margin-top: 8px;
+    background: linear-gradient(100deg, var(--c1), var(--c2) 50%, var(--c3));
+    -webkit-background-clip: text; color: transparent;
+  }
+  
+  .subtitle { text-align: center; color: var(--muted); font-size: 17px; margin-top: 18px; font-weight: 600; line-height: 1.5; }
+  .subtitle b { color: var(--ivory); }
+
+  .hero-title { margin-bottom: 18px; }
+  .hero-subtext { margin-bottom: 0; margin-top: 4px; font-size: 13px; white-space: nowrap; }
+
+  .hero-icon {
+    width: 72px; height: 72px; margin: 0 auto 18px; border-radius: 22px;
+    background: linear-gradient(135deg, var(--c1), var(--c2));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 40px rgba(56,189,248,0.3);
+  }
+  .hero-icon-svg { width: 32px; height: 32px; }
+
+  .card-surface {
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: 20px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255,255,255,0.04);
+    position: relative; overflow: hidden;
+  }
+
+  .hero-bullets {
+    list-style-type: square;
+    text-align: left;
+    max-width: 620px;
+    margin: 28px auto 0;
+    color: var(--muted);
+    font-size: 15.5px;
+    line-height: 1.7;
+    padding-left: 20px;
+  }
+  .hero-bullets li { margin-bottom: 10px; }
+  .hero-bullets li::marker { color: var(--c1); }
+  .hero-bullets b { color: var(--ivory); }
+  
+  .trust-row { display: flex; gap: 12px; margin-top: 30px; flex-wrap: wrap; justify-content: center; }
+  .trust-chip {
+    display: flex; align-items: center; gap: 10px;
+    padding: 13px 20px; border-radius: 30px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--surface-border);
+    font-size: 14.5px; color: var(--muted); font-weight: 600;
+  }
+  .trust-chip svg { flex: none; width: 19px; height: 19px; color: var(--c1); }
+  .trust-chip b { color: var(--ivory); font-weight: 700; }
+
+  .stat-row { display: flex; gap: 18px; margin-top: 52px; flex-wrap: wrap; justify-content: center; align-items: stretch; }
+  .stat-card { flex: 1 1 150px; padding: 26px 16px; text-align: center; position: relative; overflow: visible; }
+  .stat-card .num { font-size: 38px; font-weight: 800; font-family: 'Space Grotesk', sans-serif; }
+  .stat-card .lbl { font-size: 12px; letter-spacing: 1.3px; color: var(--muted); text-transform: uppercase; margin-top: 10px; font-weight: 700; }
+
+  .stat-card.stat-neutral {
+    border: 1px solid var(--surface-border);
+  }
+  .stat-card.stat-neutral .num {
+    background: linear-gradient(90deg, var(--c1), var(--c2));
+    -webkit-background-clip: text; color: transparent;
+  }
+  .stat-card.stat-neutral .tick {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-size: 10.5px; letter-spacing: 0.8px; color: var(--c1); font-weight: 700;
+    text-transform: uppercase; margin-bottom: 12px; opacity: 0.85;
+  }
+  .stat-card.stat-neutral .tick svg { width: 12px; height: 12px; }
+  .stat-card.stat-neutral:nth-child(3) .tick { color: var(--c3); }
+  .stat-card.stat-neutral:nth-child(3) .num {
+    background: linear-gradient(90deg, var(--c3), #fb7185);
+    -webkit-background-clip: text; color: transparent;
+  }
+
+  .stat-card.stat-hero {
+    border: 1px solid rgba(192, 132, 252, 0.45);
+    background: linear-gradient(180deg, rgba(192,132,252,0.14), rgba(56,189,248,0.06));
+    box-shadow: 0 14px 40px rgba(192, 132, 252, 0.22), 0 0 0 1px rgba(192,132,252,0.08) inset;
+    transform: scale(1.08);
+    padding-top: 30px;
+  }
+  .stat-card.stat-hero .num {
+    font-size: 44px;
+    background: linear-gradient(90deg, var(--c1), var(--c2));
+    -webkit-background-clip: text; color: transparent;
+  }
+  .stat-card.stat-hero .lbl { color: #e6d9ff; }
+  .hero-tag {
+    position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+    background: linear-gradient(90deg, var(--c1), var(--c2));
+    color: #04030a; font-size: 9.5px; font-weight: 800; letter-spacing: 1px;
+    text-transform: uppercase; padding: 5px 16px; border-radius: 20px;
+    white-space: nowrap; box-shadow: 0 6px 16px rgba(192,132,252,0.4);
+    z-index: 5;
+  }
+  @media(max-width:600px){
+    .stat-row { margin-top: 46px; }
+    .stat-card.stat-hero { transform: none; order: -1; flex-basis: 100%; }
+    .trust-row { gap: 8px; }
+    .trust-chip { font-size: 12px; padding: 10px 14px; }
+  }
+
+  .big-metric { padding: 36px 24px; text-align: center; margin-top: 32px; }
+  .big-metric .figure { font-size: 80px; font-weight: 800; color: var(--ivory); line-height: 1; font-family: 'Space Grotesk', sans-serif; }
+  .big-metric .figure span { background: linear-gradient(100deg, var(--c1), var(--c2), var(--c3)); -webkit-background-clip: text; color: transparent; }
+  .big-metric .caption { color: var(--muted); font-size: 16px; margin-top: 12px; font-weight: 500; }
+  
+  .week-row { display: flex; gap: 12px; justify-content: center; margin-top: 28px; flex-wrap: wrap; }
+  .week-pill { display: flex; align-items: center; gap: 8px; padding: 13px 24px; border-radius: 24px; font-size: 15px; font-weight: 700; background: rgba(56, 189, 248, 0.1); border: 1px solid var(--surface-border); color: var(--ivory); font-family: 'Space Grotesk', sans-serif; }
+  .week-pill span.lbl { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+  .week-pill span.val { color: var(--c1); font-size: 18px; }
+  .week-pill.milestone {
+    background: linear-gradient(120deg, rgba(56,189,248,0.18), rgba(192,132,252,0.18));
+    border-color: rgba(192,132,252,0.4);
+    box-shadow: 0 8px 24px rgba(192,132,252,0.2);
+    transform: scale(1.08);
+  }
+  .week-pill.milestone span.val {
+    background: linear-gradient(90deg, var(--c1), var(--c2));
+    -webkit-background-clip: text; color: transparent; font-size: 20px;
+  }
+
+  .split-bar { display: flex; height: 54px; border-radius: 16px; overflow: hidden; margin-top: 32px; font-weight: 800; font-size: 22px; font-family: 'Space Grotesk', sans-serif; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+  .split-bar .inv { background: linear-gradient(120deg, var(--c1), var(--c2)); color: #04030a; display: flex; align-items: center; justify-content: center; }
+  .split-bar .comp { background: rgba(192, 132, 252, 0.15); border-left: 1px solid rgba(192, 132, 252, 0.3); color: var(--ivory); display: flex; align-items: center; justify-content: center; }
+  
+  .feature-row { display: flex; gap: 18px; margin-top: 32px; flex-wrap: wrap; }
+  .feature.wide { flex: 1 1 100%; display: flex; align-items: center; gap: 18px; text-align: left; padding: 20px 24px; }
+  .feature.wide .ic-wrap { margin: 0; flex: none; }
+  .feature.wide .t { margin-top: 0; }
+  .feature.wide .d { margin-top: 4px; }
+  .split-legend { display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+  .split-legend .leg { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 20px; background: rgba(255,255,255,0.04); border: 1px solid var(--surface-border); font-size: 13.5px; font-weight: 600; color: var(--ivory); }
+  .split-legend .leg .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .split-legend .leg.inv .dot { background: linear-gradient(120deg, var(--c1), var(--c2)); }
+  .split-legend .leg.comp .dot { background: rgba(192,132,252,0.7); }
+  .split-legend .leg b { font-weight: 800; }
+  .feature { flex: 1 1 210px; padding: 28px 20px 24px; text-align: center; position: relative; overflow: hidden; transition: transform 0.3s ease; }
+  .feature::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--c1), var(--c2));
+  }
+  .feature:nth-child(2)::before { background: linear-gradient(90deg, var(--c2), var(--c1)); }
+  .feature:nth-child(3)::before { background: linear-gradient(90deg, var(--c3), var(--c2)); }
+  .feature .step-tag {
+    position: absolute; top: 14px; right: 16px; font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px; font-weight: 800; color: var(--muted); opacity: 0.45; letter-spacing: 0.5px;
+  }
+  .feature svg { width: 30px; height: 30px; color: var(--c1); }
+  .feature .t { color: var(--ivory); font-weight: 800; font-size: 17px; margin-top: 16px; font-family: 'Space Grotesk', sans-serif; }
+  .feature .d { color: var(--muted); font-size: 14.5px; margin-top: 8px; line-height: 1.55; font-weight: 500; }
+  .feature .ic-wrap {
+    width: 58px; height: 58px; border-radius: 18px; display: flex; align-items: center; justify-content: center;
+    margin: 0 auto; background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.3);
+    box-shadow: 0 0 0 6px rgba(56,189,248,0.06), 0 8px 20px rgba(56,189,248,0.15);
+  }
+  .feature:nth-child(2) .ic-wrap { background: rgba(192,132,252,0.12); border-color: rgba(192,132,252,0.3); box-shadow: 0 0 0 6px rgba(192,132,252,0.06), 0 8px 20px rgba(192,132,252,0.15); }
+  .feature:nth-child(2) svg { color: var(--c2); }
+  .feature:nth-child(3) .ic-wrap { background: rgba(244,114,182,0.12); border-color: rgba(244,114,182,0.3); box-shadow: 0 0 0 6px rgba(244,114,182,0.06), 0 8px 20px rgba(244,114,182,0.15); }
+  .feature:nth-child(3) svg { color: var(--c3); }
+  .feature.wide::before { height: 100%; width: 3px; background: linear-gradient(180deg, var(--c3), var(--c2)); }
+
+  .split-tagline { text-align: center; margin-top: 30px; font-size: 14px; color: var(--muted); font-weight: 600; letter-spacing: 0.3px; }
+  .split-tagline span { background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3)); -webkit-background-clip: text; color: transparent; font-weight: 800; }
+
+  /* Trio stack — three separate bordered cards */
+  .trio-stack {
+    margin-top: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .trio-card-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px 18px;
+    position: relative;
+  }
+  .trio-card-item .ic-wrap {
+    width: 48px; height: 48px; border-radius: 14px; flex: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .trio-card-item:nth-child(1) .ic-wrap {
+    background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.3);
+    box-shadow: 0 0 0 5px rgba(56,189,248,0.06);
+  }
+  .trio-card-item:nth-child(1) svg { color: var(--c1); width: 22px; height: 22px; }
+  .trio-card-item:nth-child(2) .ic-wrap {
+    background: rgba(192,132,252,0.12); border: 1px solid rgba(192,132,252,0.3);
+    box-shadow: 0 0 0 5px rgba(192,132,252,0.06);
+  }
+  .trio-card-item:nth-child(2) svg { color: var(--c2); width: 22px; height: 22px; }
+  .trio-card-item:nth-child(3) .ic-wrap {
+    background: rgba(244,114,182,0.12); border: 1px solid rgba(244,114,182,0.3);
+    box-shadow: 0 0 0 5px rgba(244,114,182,0.06);
+  }
+  .trio-card-item:nth-child(3) svg { color: var(--c3); width: 22px; height: 22px; }
+  .trio-body { text-align: left; flex: 1 1 auto; }
+  .trio-body .t {
+    text-align: left; margin-top: 2px; color: var(--ivory);
+    font-weight: 800; font-size: 16px; font-family: 'Space Grotesk', sans-serif;
+  }
+  .trio-body .d {
+    text-align: left; color: var(--muted); font-size: 13.5px;
+    margin-top: 4px; line-height: 1.45; font-weight: 500;
+  }
+  .mini-tag {
+    display: inline-block; margin-top: 8px; padding: 4px 10px;
+    border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.2px;
+  }
+  .mini-tag.c1 { background: rgba(56,189,248,0.1); color: var(--c1); border: 1px solid rgba(56,189,248,0.28); }
+  .mini-tag.c2 { background: rgba(192,132,252,0.1); color: var(--c2); border: 1px solid rgba(192,132,252,0.28); }
+  .mini-tag.c3 { background: rgba(244,114,182,0.1); color: var(--c3); border: 1px solid rgba(244,114,182,0.28); }
+
+  /* Keep old class names harmless if referenced elsewhere */
+  .trio-card { margin-top: 0; }
+  .trio-row { display: flex; align-items: flex-start; gap: 16px; }
+
+  .calc-box { padding: 28px; margin-top: 22px; }
+  .slider-container { margin: 16px 0 18px; position: relative; padding: 10px 0; touch-action: pan-y; }
+  .slider-label { display: flex; justify-content: space-between; font-size: 14px; margin-top: 5vh;margin-bottom: 8px; color: var(--muted); }
+  .slider-label span.val { font-size: 26px; font-weight: 800; color: var(--c1); font-family: 'Space Grotesk', sans-serif; }
+  
+  input[type=range] {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 10px; border-radius: 6px;
+    background: rgba(255,255,255,0.1); outline: none; display: block;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--c1), var(--c2)); cursor: pointer;
+    box-shadow: 0 0 16px rgba(56,189,248,0.4); border: 2px solid #fff;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--c1), var(--c2)); cursor: pointer;
+    box-shadow: 0 0 16px rgba(56,189,248,0.4); border: 2px solid #fff;
+  }
+
+  .calc-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+  .res-card { background: rgba(255,255,255,0.02); padding: 16px 12px; border-radius: 14px; border: 1px solid var(--surface-border); text-align: center; }
+  .res-card .lbl { font-size: 11.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+  .res-card .val { font-size: 21px; font-weight: 800; margin-top: 9px; color: var(--ivory); font-family: 'Space Grotesk', sans-serif; }
+  .res-card.highlight { border-color: rgba(56,189,248,0.35); background: rgba(56,189,248,0.06); }
+  .res-card.highlight .val { background: linear-gradient(90deg, var(--c1), var(--c2)); -webkit-background-clip: text; color: transparent; }
+
+  .friday-badge { display: flex; align-items: center; gap: 8px; margin: 18px auto 0; padding: 9px 18px; border-radius: 30px; background: rgba(255,255,255,0.06); border: 1px solid var(--surface-border); font-size: 13.5px; font-weight: 700; color: var(--muted); width: fit-content; }
+  .friday-badge svg { width: 16px; height: 16px; color: var(--c1); flex: none; }
+  .target-chip-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+  .target-chip-x { font-size: 16px; color: var(--muted); font-weight: 700; }
+
+  .growth-chart-wrap { margin-top: 26px; padding: 20px 18px 16px; }
+  .growth-svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .growth-legend { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 10px; font-size: 12px; color: var(--muted); font-weight: 600; }
+  .growth-legend span { display: flex; align-items: center; gap: 6px; }
+  .growth-legend .dot { width: 9px; height: 9px; border-radius: 3px; display: inline-block; }
+  .growth-legend .dot-green { background: var(--green); }
+  .growth-legend .dot-red { background: var(--red); }
+  .growth-legend .dot-line { width: 14px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--c1), var(--c3)); }
+
+  .bar { rx: 6; opacity: 0; transform: scaleY(0); transform-box: fill-box; transform-origin: bottom; transition: transform 0.7s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease; }
+  section.slide.active .bar { opacity: 1; transform: scaleY(1); }
+  .bar-gain { fill: var(--green); fill-opacity: 0.85; }
+  .bar-loss { fill: var(--red); fill-opacity: 0.85; }
+  .growth-bars rect:nth-child(1) { transition-delay: 0.05s; }
+  .growth-bars rect:nth-child(2) { transition-delay: 0.15s; }
+  .growth-bars rect:nth-child(3) { transition-delay: 0.25s; }
+  .growth-bars rect:nth-child(4) { transition-delay: 0.35s; }
+  .growth-bars rect:nth-child(5) { transition-delay: 0.45s; }
+  .growth-bars rect:nth-child(6) { transition-delay: 0.55s; }
+  .growth-bars rect:nth-child(7) { transition-delay: 0.65s; }
+  .growth-bars rect:nth-child(8) { transition-delay: 0.75s; }
+  .growth-barlabels text { fill: var(--muted); font-size: 11.5px; font-weight: 700; text-anchor: middle; font-family: 'Space Grotesk', sans-serif; opacity: 0; transition: opacity 0.4s ease 1s; }
+  section.slide.active .growth-barlabels text { opacity: 1; }
+  .growth-barlabels text.neg { fill: var(--red); }
+
+  .growth-line { stroke-dasharray: 900; stroke-dashoffset: 900; transition: stroke-dashoffset 1.3s cubic-bezier(0.16,1,0.3,1) 0.5s; opacity: 0.9; }
+  section.slide.active .growth-line { stroke-dashoffset: 0; }
+  .growth-points circle { fill: var(--bg); stroke: var(--c2); stroke-width: 2; opacity: 0; transition: opacity 0.4s ease; }
+  section.slide.active .growth-points circle { opacity: 1; transition-delay: 1.4s; }
+  .growth-milestone-dot { fill: var(--c3); stroke: var(--ivory); stroke-width: 2.5; opacity: 0; transition: opacity 0.4s ease 1.5s; filter: drop-shadow(0 0 8px rgba(244,114,182,0.8)); }
+  section.slide.active .growth-milestone-dot { opacity: 1; }
+  .growth-xlabels text { fill: var(--muted); font-size: 13px; font-weight: 600; text-anchor: middle; font-family: 'Inter', sans-serif; }
+  .growth-xlabel-end { fill: var(--c3) !important; font-weight: 800 !important; }
+  .growth-vlabel { fill: var(--muted); font-size: 12.5px; font-weight: 700; text-anchor: middle; font-family: 'Space Grotesk', sans-serif; }
+  .growth-vlabel-end { fill: var(--c3); font-size: 15px; font-weight: 800; }
+  .growth-caption { text-align: center; font-size: 12px; color: var(--muted); margin-top: 10px; opacity: 0.8; }
+
+  .milestone-callout { margin-top: 18px; text-align: center; padding: 18px 20px 20px; border-radius: 18px; background: linear-gradient(180deg, rgba(244,114,182,0.14), rgba(192,132,252,0.06)); border: 1px solid rgba(244,114,182,0.4); box-shadow: 0 12px 30px rgba(244,114,182,0.16); }
+  .milestone-callout-badge { font-size: 11.5px; letter-spacing: 1.2px; font-weight: 800; color: var(--c3); text-transform: uppercase; margin-bottom: 8px; }
+  .milestone-callout-num { font-size: 42px; font-weight: 800; font-family: 'Space Grotesk', sans-serif; background: linear-gradient(90deg, var(--c2), var(--c3)); -webkit-background-clip: text; color: transparent; line-height: 1.1; }
+  .milestone-callout-sub { font-size: 13px; color: var(--muted); margin-top: 8px; font-weight: 500; }
+
+  .timeline-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 24px; position: relative; }
+  .timeline-card { position: relative; overflow: hidden; }
+  .timeline-card { background: rgba(255,255,255,0.02); border: 1px solid var(--surface-border); border-radius: 14px; padding: 14px 10px 12px; text-align: center; }
+  .timeline-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.08); }
+  .timeline-card.highlight-milestone { background: linear-gradient(180deg, rgba(192,132,252,0.14), rgba(56,189,248,0.06)); border-color: rgba(192,132,252,0.4); box-shadow: 0 10px 28px rgba(192,132,252,0.2); }
+  .timeline-card.highlight-milestone::before { background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3)); }
+  .timeline-card .week-num { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); font-weight: 700; }
+  .timeline-card .week-val { font-size: 18px; font-weight: 800; color: var(--c1); margin-top: 7px; font-family: 'Space Grotesk', sans-serif; }
+  .timeline-card.highlight-milestone .week-val { background: linear-gradient(90deg, var(--c1), var(--c2)); -webkit-background-clip: text; color: transparent; }
+  .timeline-card .mini-track { height: 5px; border-radius: 4px; background: rgba(255,255,255,0.08); margin-top: 11px; overflow: hidden; }
+  .timeline-card .mini-fill {
+    height: 100%; width: 0; border-radius: 4px;
+    background: linear-gradient(90deg, var(--c1), var(--c2));
+    transition: width 1.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 8px rgba(56,189,248,0.5);
+  }
+  .timeline-card.highlight-milestone .mini-fill { background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3)); box-shadow: 0 0 10px rgba(192,132,252,0.6); }
+  section.slide.active .timeline-card .mini-fill { width: var(--fill, 0%); }
+  .timeline-grid .timeline-card:nth-child(1) .mini-fill { transition-delay: 0.05s; }
+  .timeline-grid .timeline-card:nth-child(2) .mini-fill { transition-delay: 0.15s; }
+  .timeline-grid .timeline-card:nth-child(3) .mini-fill { transition-delay: 0.25s; }
+  .timeline-grid .timeline-card:nth-child(4) .mini-fill { transition-delay: 0.35s; }
+  .timeline-grid .timeline-card:nth-child(5) .mini-fill { transition-delay: 0.45s; }
+  .timeline-grid .timeline-card:nth-child(6) .mini-fill { transition-delay: 0.55s; }
+  .timeline-grid .timeline-card:nth-child(7) .mini-fill { transition-delay: 0.65s; }
+  .timeline-grid .timeline-card:nth-child(8) .mini-fill { transition-delay: 0.75s; }
+  .milestone-flag {
+    display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; padding: 2px 10px; border-radius: 20px;
+    background: rgba(255,255,255,0.08); font-size: 9.5px; font-weight: 800; letter-spacing: 0.4px;
+    color: var(--ivory); text-transform: uppercase;
+  }
+
+  .formula-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+  .formula-circle.formula-circle-hero { width: 140px; height: 140px; background: rgba(167,139,250,0.05); backdrop-filter: none; -webkit-backdrop-filter: none; border: 2px solid rgba(167,139,250,0.65); box-shadow: 0 0 0 1px rgba(167,139,250,0.2), 0 0 40px rgba(167,139,250,0.55); }
+  .formula-circle.formula-circle-hero .n { color: var(--c1); font-size: 24px; }
+  .formula-circle-hero .l { font-size: 10.5px; }
+  .formula-circle { width: 100px; height: 100px; border-radius: 50%; background: rgba(20,27,48,0.55); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1.5px solid var(--surface-border); box-shadow: 0 8px 20px rgba(0,0,0,0.35); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .formula-circle .n { font-size: 19px; font-weight: 800; color: var(--ivory); font-family: 'Space Grotesk', sans-serif; }
+  .formula-circle .l { font-size: 9.5px; color: var(--muted); margin-top: 4px; letter-spacing: 0.3px; font-weight: 700; }
+  .formula-op { font-size: 24px; color: var(--c1); font-weight: 800; }
+  
+  .step-row { display: flex; gap: 14px; margin-top: 24px; flex-wrap: wrap; align-items: center; }
+  .step { flex: 1 1 140px; padding: 18px 14px; text-align: center; }
+  .step .num { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--c1), var(--c2)); color: #04030a; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-family: 'Space Grotesk', sans-serif; }
+  .step .tt { font-size: 11.5px; color: var(--muted); letter-spacing: 0.8px; text-transform: uppercase; font-weight: 700; }
+  .step .val { font-size: 17px; font-weight: 800; margin-top: 9px; color: var(--ivory); font-family: 'Space Grotesk', sans-serif; }
+  .step-arrow { flex: 0 0 auto; color: var(--c1); opacity: 0.6; width: 16px; height: 16px; }
+
+  .rule-list, .risk-list { margin-top: 24px; display: flex; flex-direction: column; gap: 12px; }
+  .rule { display: flex; gap: 16px; align-items: flex-start; padding: 18px 22px; border-radius: 16px; font-size: 16px; line-height: 1.6; color: var(--ivory); font-weight: 500; }
+  .rule svg { flex: none; width: 22px; height: 22px; color: var(--c1); margin-top: 2px; }
+  
+  .risk-item { display: flex; gap: 16px; padding: 16px 20px; border-radius: 16px; }
+  .risk-item .ic { flex: none; width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border: 1px solid var(--surface-border); }
+  .risk-item .ic svg { width: 18px; height: 18px; color: var(--c3); }
+  .risk-item .body b { color: var(--ivory); font-size: 16.5px; font-family: 'Space Grotesk', sans-serif; }
+  .risk-item .body p { margin: 6px 0 0; color: var(--muted); font-size: 14.5px; line-height: 1.55; font-weight: 500; }
+
+  .info-box { margin-top: 24px; padding: 18px 22px; border-radius: 16px; font-size: 15.5px; color: var(--ivory); line-height: 1.6; background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.3); font-weight: 500; }
+  .alert-box { display: flex; gap: 16px; align-items: flex-start; margin-top: 28px; padding: 16px 20px; background: rgba(248, 113, 113, 0.08); border: 1px solid rgba(248, 113, 113, 0.25); border-radius: 16px; }
+  .alert-box svg { flex: none; width: 22px; height: 22px; color: var(--red); margin-top: 2px; }
+  .alert-box .txt { color: var(--ivory); font-size: 15.5px; line-height: 1.55; font-weight: 500; }
+  
+  .foot-note { display: flex; align-items: flex-start; gap: 14px; margin-top: 20px; padding: 16px 20px; font-size: 14.5px; color: var(--muted); line-height: 1.55; font-weight: 500; }
+  .foot-note b { color: var(--ivory); }
+  .foot-note .icon { flex: none; width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border: 1px solid var(--surface-border); }
+  .foot-note .icon svg { width: 15px; height: 15px; color: var(--c1); }
+
+  .pill { display: inline-block; margin-top: 18px; padding: 10px 30px; border-radius: 30px; background: linear-gradient(135deg, var(--c3), #fb7185); color: #060913; font-weight: 800; font-size: 13px; letter-spacing: 1.2px; box-shadow: 0 8px 24px rgba(244,114,182,0.3); }
+  .bar-track { height: 8px; border-radius: 8px; background: rgba(255,255,255,0.08); margin-top: 28px; overflow: hidden; }
+  .bar-fill { height: 100%; width: 20%; background: linear-gradient(90deg, var(--c1), var(--c2)); box-shadow: 0 0 16px rgba(56,189,248,0.5); }
+
+  .cta { display: inline-block; margin-top: 24px; padding: 18px 40px; border-radius: 34px; background: linear-gradient(120deg, var(--c1), var(--c2), var(--c3)); color: #04030a; font-weight: 800; font-size: 14.5px; letter-spacing: 1.2px; text-transform: uppercase; font-family: 'Space Grotesk', sans-serif; box-shadow: 0 16px 40px rgba(192,132,252,0.3); cursor: pointer; border: none; }
+  
+  /* Clickable Down/Top Arrow Styling — pinned to a fixed distance from the slide's own
+     bottom edge via position:absolute, fully decoupled from content flow (matches the
+     original desktop-only behavior, now applied consistently on mobile too) */
+  .scroll-down { 
+    position: absolute;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer; 
+    opacity: 0.75; 
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 2px;
+    z-index: 10;
+  }
+  .scroll-down:hover { 
+    opacity: 1; 
+    transform: translateX(-50%) translateY(2px); 
+  }
+  .scroll-down svg { 
+    width: 22px; 
+    height: 22px; 
+    color: var(--ivory); 
+    animation: bounce 2s infinite; 
+  }
+  .scroll-down span { 
+    font-size: 9.5px; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    color: var(--muted); 
+    font-weight: 600; 
+  }
+
+  @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-5px); } 60% { transform: translateY(-2px); } }
+  @keyframes bounceUp { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-5px); } 60% { transform: translateY(-2px); } }
+
+  @media(max-width:600px){
+    h1.display { font-size: 32px; line-height: 1.15; }
+    h1.display .grad { font-size: 42px; }
+    .eyebrow { font-size: 12px; letter-spacing: 2px; gap: 8px; font-weight: 800; }
+    .eyebrow::before, .eyebrow::after { width: 12px; }
+    .hero-subtext { font-size: 10px; letter-spacing: 1.5px; gap: 8px; }
+    .hero-subtext::before, .hero-subtext::after { width: 12px; }
+    /* Slide 10 uses an icon badge instead of the eyebrow line every other slide has —
+       shrink it so the heading sits at roughly the same vertical offset everywhere */
+    .hero-icon { width: 44px; height: 44px; margin-bottom: 12px; border-radius: 14px; }
+    .hero-icon-svg { width: 22px; height: 22px; }
+    /* Title starts at the same top offset on every slide; Next is absolutely positioned
+       (see .scroll-down above) so it stays pinned to the slide's bottom edge on its own,
+       independent of content height — no gap-vs-consistency trade-off either way. */
+    section.slide { padding: calc(50px + env(safe-area-inset-top, 0px)) 16px 70px 16px; justify-content: flex-start; }
+    /* On mobile, only the very first slide shows "Next" and only the very last shows
+       "Back to Top" — hidden everywhere in between, per request */
+    .scroll-down { display: none !important; }
+    #slide1 .scroll-down, #slide10 .scroll-down { display: flex !important; }
+    .stat-card .num { font-size: 28px; }
+    .big-metric .figure { font-size: 56px; }
+    .calc-results { grid-template-columns: 1fr 1fr; }
+    .timeline-grid { grid-template-columns: repeat(2, 1fr); }
+
+    .target-chip-row { gap: 8px; flex-wrap: nowrap; margin-top: 22px; }
+    .target-chip-row .formula-circle { width: 84px; height: 84px; flex: none; }
+    .target-chip-row .formula-circle .n { font-size: 15.5px; }
+    .target-chip-row .formula-circle .l { font-size: 8px; margin-top: 3px; }
+    .target-chip-row .formula-circle-hero { width: 108px; height: 108px; transform: none; }
+    .target-chip-row .formula-circle-hero .n { font-size: 18px; }
+    .target-chip-row .formula-circle-hero .l { font-size: 9px; }
+    .target-chip-x { font-size: 15px; flex: 0 0 auto; font-weight: 800; }
+
+    .trust-row { margin-top: 18px; gap: 8px; }
+    .trust-chip { padding: 10px 14px; font-size: 13px; }
+    .trust-chip svg { width: 16px; height: 16px; }
+    .stat-row { margin-top: 26px; gap: 10px; }
+    .stat-card { padding: 16px 10px; }
+    .stat-card .lbl { font-size: 9.5px; }
+    .stat-card.stat-hero { padding-top: 22px; }
+    .stat-card.stat-hero .num { font-size: 30px; }
+    .hero-tag { padding: 4px 12px; font-size: 8.5px; top: -10px; }
+    .stat-card.stat-neutral .tick { margin-bottom: 8px; font-size: 8.5px; }
+
+    /* Slide 1 is the shortest slide, so open up its own internal spacing rather than
+       leaving a dead gap before Next — scoped to #slide1 only, other slides untouched.
+       Kept to one consistent gap between groups (36px) rather than mismatched jumps. */
+    #slide1 .trust-row { margin-top: 36px; gap: 14px; }
+    #slide1 .trust-chip { padding: 12px 16px; }
+    #slide1 .stat-row { margin-top: 36px; gap: 12px; }
+    #slide1 .stat-card { padding: 20px 12px; }
+    #slide1 .stat-card.stat-hero { padding-top: 26px; }
+
+    /* Slide 3: balanced mobile spacing + separate cards */
+    #slide3 { padding-top: calc(44px + env(safe-area-inset-top, 0px)); padding-bottom: 60px; }
+    #slide3 h1.display { font-size: 30px; }
+    #slide3 h1.display .grad { font-size: 38px; margin-top: 4px; }
+    #slide3 .split-bar { height: 40px; margin-top: 18px; font-size: 16px; }
+    #slide3 .split-legend { margin-top: 12px; gap: 10px; }
+    #slide3 .split-legend .leg { padding: 7px 14px; font-size: 12.5px; }
+    #slide3 .trio-stack { margin-top: 18px; gap: 12px; }
+    #slide3 .trio-card-item { padding: 16px 16px; gap: 14px; }
+    #slide3 .trio-card-item .ic-wrap { width: 44px; height: 44px; border-radius: 13px; }
+    #slide3 .trio-card-item svg { width: 20px; height: 20px; }
+    #slide3 .trio-body .t { font-size: 15.5px; margin-top: 0; }
+    #slide3 .trio-body .d { font-size: 13.5px; margin-top: 4px; line-height: 1.4; }
+    #slide3 .mini-tag { margin-top: 8px; padding: 4px 11px; font-size: 11px; }
+    #slide3 .split-tagline { margin-top: 16px; font-size: 13px; }
+
+    /* Slide 5: callout + formula + ₹1L stat cards — roomy on mobile */
+    #slide5 { padding-top: calc(42px + env(safe-area-inset-top, 0px)); padding-bottom: 56px; }
+    #slide5 h1.display { font-size: 30px; }
+    #slide5 h1.display .grad { font-size: 36px; margin-top: 4px; }
+    #slide5 .milestone-callout { margin-top: 18px; padding: 20px 18px 22px; }
+    #slide5 .milestone-callout-badge { font-size: 11.5px; margin-bottom: 8px; }
+    #slide5 .milestone-callout-num { font-size: 44px; }
+    #slide5 .milestone-callout-sub { font-size: 13px; margin-top: 8px; }
+    #slide5 .target-chip-row { margin-top: 20px; gap: 10px; }
+    #slide5 .target-chip-row .formula-circle { width: 86px; height: 86px; }
+    #slide5 .target-chip-row .formula-circle .n { font-size: 16px; }
+    #slide5 .target-chip-row .formula-circle .l { font-size: 8.5px; }
+    #slide5 .target-chip-row .formula-circle-hero { width: 108px; height: 108px; }
+    #slide5 .target-chip-row .formula-circle-hero .n { font-size: 19px; }
+    #slide5 .target-chip-row .formula-circle-hero .l { font-size: 9px; }
+    #slide5 .stat-row { margin-top: 24px !important; gap: 12px; }
+    #slide5 .stat-card { padding: 20px 12px; flex: 1 1 100px; }
+    #slide5 .stat-card .num { font-size: 26px !important; }
+    #slide5 .stat-card .lbl { font-size: 10.5px; }
+    #slide5 .stat-card.stat-hero { transform: none; order: 0; padding-top: 24px; }
+    #slide5 .stat-card.stat-hero .num { font-size: 26px !important; }
+    #slide5 .hero-tag { font-size: 9px; padding: 4px 11px; top: -11px; }
+    #slide5 .stat-card .tick { font-size: 10px; margin-bottom: 9px; }
+    #slide5 .friday-badge { margin-top: 20px !important; padding: 9px 16px; font-size: 12.5px; }
+
+    /* Slide 2 (Cashflow): balanced mobile spacing — fits without feeling cramped */
+    #slide2 { padding-top: calc(40px + env(safe-area-inset-top, 0px)); padding-bottom: 60px; }
+    #slide2 .eyebrow { margin-bottom: 12px; }
+    #slide2 h1.display { font-size: 30px; }
+    #slide2 h1.display .grad { font-size: 38px; margin-top: 4px; }
+    #slide2 .subtitle { margin-top: 10px; font-size: 14.5px; line-height: 1.4; }
+    #slide2 .big-metric { margin-top: 20px; padding: 26px 20px 24px; }
+    #slide2 .big-metric .figure { font-size: 54px; }
+    #slide2 .big-metric .figure + div { margin-top: 10px !important; padding: 5px 14px !important; font-size: 11px !important; }
+    #slide2 .big-metric > div:last-child { margin-top: 16px !important; gap: 10px !important; }
+    #slide2 .big-metric > div:last-child > div:first-child { padding: 10px 16px !important; font-size: 14px !important; gap: 9px !important; }
+    #slide2 .big-metric > div:last-child > div:first-child span:last-child { padding: 4px 11px !important; font-size: 12.5px !important; }
+    #slide2 .big-metric > div:last-child > div:last-child { margin-top: 4px !important; gap: 9px !important; }
+    #slide2 .big-metric > div:last-child > div:last-child > div { padding: 8px 15px !important; font-size: 13px !important; }
+    #slide2 .week-row {
+      margin-top: 18px;
+      gap: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #slide2 .week-pill { padding: 12px 14px; font-size: 14px; gap: 7px; justify-content: center; }
+    #slide2 .week-pill span.lbl { font-size: 12px; }
+    #slide2 .week-pill span.val { font-size: 16px; }
+    #slide2 .week-pill.milestone { transform: none; }
+    #slide2 .week-pill.milestone span.val { font-size: 16.5px; }
+    #slide2 .foot-note { margin-top: 18px; padding: 15px 16px; font-size: 13.5px; line-height: 1.5; gap: 12px; }
+    #slide2 .foot-note .icon { width: 30px; height: 30px; border-radius: 9px; }
+    #slide2 .foot-note .icon svg { width: 14px; height: 14px; }
+
+    /* Slide 6: clean 2x2 grid on mobile, numbers show the sequence */
+    #slide6 .step-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    #slide6 .step-arrow { display: none; }
+
+    /* Slide 1: vertically center the complete hero composition on mobile
+       so the large lower area is used instead of leaving empty space. */
+    #slide1 {
+      justify-content: center;
+    }
+
+    /* Slide 10: distribute the closing content across the full mobile
+       viewport. Percentage anchors prevent the content from collapsing into
+       the middle of the screen. */
+    #slide10 {
+      justify-content: initial;
+    }
+
+    #slide10 .slide-content {
+      position: absolute;
+      inset: 0 16px 0 16px;
+      width: auto;
+      max-width: none;
+      height: auto;
+      margin: 0;
+      display: block;
+    }
+
+    #slide10 .hero-icon {
+      position: absolute;
+      top: 31%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+    }
+
+    #slide10 h1.display {
+      position: absolute;
+      top: 41%;
+      left: 0;
+      right: 0;
+      margin: 0;
+    }
+
+    #slide10 .subtitle {
+      position: absolute;
+      top: 53%;
+      left: 0;
+      right: 0;
+      margin: 0 !important;
+    }
+
+    #slide10 .cta {
+      position: absolute;
+      top: 61%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+      white-space: nowrap;
+    }
+
+    /* Mobile typography: redesigned pass — larger, bolder scale across the board,
+       not just brighter, so text reads clearly at arm's length on a phone. */
+    .eyebrow {
+      font-size: 13px;
+      letter-spacing: 2px;
+      font-weight: 800;
+    }
+
+    h1.display {
+      font-size: 34px;
+    }
+
+    h1.display .grad {
+      font-size: 44px;
+    }
+
+    .subtitle {
+      font-size: 17px;
+      line-height: 1.5;
+      font-weight: 600;
+    }
+
+    .hero-subtext {
+      font-size: 12.5px;
+      letter-spacing: 1.2px;
+    }
+
+    .trust-chip {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .stat-card .num {
+      font-size: 30px;
+    }
+
+    .stat-card .lbl {
+      font-size: 11.5px;
+      line-height: 1.3;
+      font-weight: 700;
+    }
+
+    .stat-card.stat-hero .num {
+      font-size: 36px;
+    }
+
+    .stat-card.stat-neutral .tick {
+      font-size: 10.5px;
+    }
+
+    .hero-tag {
+      font-size: 10px;
+    }
+
+    .big-metric .figure {
+      font-size: 58px;
+    }
+
+    .big-metric .caption {
+      font-size: 15.5px;
+      line-height: 1.45;
+      font-weight: 500;
+    }
+
+    .week-pill {
+      font-size: 15px;
+    }
+
+    .week-pill span.lbl {
+      font-size: 13px;
+    }
+
+    .week-pill span.val {
+      font-size: 18px;
+    }
+
+    .foot-note {
+      font-size: 14.5px;
+      line-height: 1.55;
+      font-weight: 500;
+    }
+
+    .split-bar {
+      font-size: 19px;
+    }
+
+    .feature .t {
+      font-size: 16px;
+    }
+
+    .feature .d {
+      font-size: 13.5px;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .slider-label {
+      font-size: 15px;
+    }
+
+    .slider-label span.val {
+      font-size: 24px !important;
+    }
+
+    .res-card .lbl {
+      font-size: 11.5px;
+      font-weight: 700;
+    }
+
+    .res-card .val {
+      font-size: 20px;
+    }
+
+    .timeline-card .week-num {
+      font-size: 11.5px;
+    }
+
+    .timeline-card .week-val {
+      font-size: 18px;
+    }
+
+    .formula-circle .n {
+      font-size: 17px;
+    }
+
+    .formula-circle .l {
+      font-size: 9.5px;
+    }
+
+    .step .tt {
+      font-size: 11.5px;
+    }
+
+    .step .val {
+      font-size: 16.5px;
+    }
+
+    .rule {
+      font-size: 15.5px;
+      line-height: 1.55;
+      font-weight: 500;
+    }
+
+    .risk-item .body b {
+      font-size: 16px;
+    }
+
+    .risk-item .body p {
+      font-size: 14px;
+      line-height: 1.55;
+      font-weight: 500;
+    }
+
+    .info-box,
+    .alert-box .txt {
+      font-size: 15px;
+      line-height: 1.55;
+      font-weight: 500;
+    }
+
+    .pill {
+      font-size: 13px;
+    }
+
+    .scroll-down span {
+      font-size: 10.5px;
+    }
+
+    #slide10 .subtitle {
+      font-size: 17px;
+    }
+
+    #slide10 .cta {
+      font-size: 14px;
+      padding: 17px 38px;
+    }
+  }
+
+  @media(max-width:600px) and (max-height:700px){
+    .eyebrow { font-size: 12px; }
+    h1.display { font-size: 30px; }
+    h1.display .grad { font-size: 40px; }
+    .subtitle { font-size: 15px; }
+    .trust-chip { font-size: 13px; }
+    .stat-card .lbl { font-size: 10.5px; }
+    .feature .d { font-size: 12.5px; }
+    .rule { font-size: 13.5px; }
+    .risk-item .body p { font-size: 12.5px; }
+
+    #slide10 .hero-icon { top: 27%; }
+    #slide10 h1.display { top: 39%; }
+    #slide10 .subtitle { top: 52%; }
+    #slide10 .cta { top: 61%; }
+    section.slide { padding-top: 16px; }
+    .trust-row { margin-top: 14px; gap: 6px; }
+    .trust-chip { padding: 7px 10px; font-size: 11px; }
+    .stat-row { margin-top: 20px; gap: 8px; }
+    .stat-card { padding: 12px 8px; }
+    .stat-card.stat-hero { padding-top: 18px; }
+
+    #slide3 .feature-row { gap: 8px; }
+    #slide3 .feature { padding: 12px 10px; }
+    #slide3 .feature .d { display: none; }
+
+    /* Slide 2 slightly tighter on short phones only */
+    #slide2 { padding-top: 28px; padding-bottom: 48px; }
+    #slide2 .eyebrow { margin-bottom: 8px; }
+    #slide2 h1.display { font-size: 28px; }
+    #slide2 h1.display .grad { font-size: 34px; margin-top: 2px; }
+    #slide2 .subtitle { margin-top: 6px; font-size: 13.5px; }
+    #slide2 .big-metric { margin-top: 12px; padding: 18px 16px; }
+    #slide2 .big-metric .figure { font-size: 46px; }
+    #slide2 .week-row { margin-top: 12px; gap: 8px; }
+    #slide2 .week-pill { padding: 10px 12px; font-size: 13.5px; }
+    #slide2 .week-pill span.val { font-size: 15px; }
+    #slide2 .week-pill.milestone span.val { font-size: 15.5px; }
+    #slide2 .foot-note { margin-top: 12px; padding: 12px 13px; font-size: 12.5px; }
+  }
+
+  /* Wide-but-short windows (typical desktop/laptop browser heights) —
+     shrink slide 3's heading, split-bar, and trio-card so the whole
+     slide fits in view without needing to scroll past the fold. */
+  @media(min-width:601px) and (max-height:820px){
+    #slide3 h1.display { font-size: 34px; }
+    #slide3 h1.display .grad { font-size: 46px; }
+    #slide3 .split-bar { height: 42px; margin-top: 20px; font-size: 17px; }
+    #slide3 .split-legend { margin-top: 10px; }
+    #slide3 .split-legend .leg { padding: 6px 12px; font-size: 12px; }
+    #slide3 .trio-stack { margin-top: 16px; gap: 8px; }
+    #slide3 .trio-card-item { padding: 12px 14px; gap: 12px; }
+    #slide3 .trio-card-item .ic-wrap { width: 40px; height: 40px; border-radius: 12px; }
+    #slide3 .trio-card-item svg { width: 18px; height: 18px; }
+    #slide3 .trio-body .t { font-size: 15px; margin-top: 0; }
+    #slide3 .trio-body .d { font-size: 13px; margin-top: 3px; }
+    #slide3 .mini-tag { margin-top: 6px; padding: 3px 10px; font-size: 10.5px; }
+    #slide3 .split-tagline { margin-top: 14px; font-size: 12.5px; }
+    #slide3 { padding-top: 34px; }
+  }
+
+  /* Slide 5 (Capital Double) has tall content — callout + formula row + stat row +
+     badge — that overflows the viewport on typical laptop window heights, pushing
+     the last element under/behind the "Next" scroll indicator. Trim its vertical
+     rhythm so the whole slide fits within one screen. */
+  @media(min-width:601px) and (max-height:1000px){
+    #slide5 { padding-top: 30px; padding-bottom: 20px; }
+    #slide5 h1.display { font-size: 38px; }
+    #slide5 h1.display .grad { font-size: 50px; margin-top: 6px; }
+    #slide5 .milestone-callout { margin-top: 14px; padding: 14px 18px 16px; }
+    #slide5 .milestone-callout-num { font-size: 36px; }
+    #slide5 .milestone-callout-sub { margin-top: 6px; }
+    #slide5 .target-chip-row { margin-top: 16px; }
+    #slide5 .target-chip-row .formula-circle { width: 84px; height: 84px; }
+    #slide5 .target-chip-row .formula-circle .n { font-size: 16px; }
+    #slide5 .target-chip-row .formula-circle .l { font-size: 8.5px; }
+    #slide5 .target-chip-row .formula-circle-hero { width: 106px; height: 106px; }
+    #slide5 .target-chip-row .formula-circle-hero .n { font-size: 19px; }
+    #slide5 .stat-row { margin-top: 18px !important; gap: 12px; }
+    #slide5 .stat-card { padding: 18px 12px; }
+    #slide5 .stat-card .num { font-size: 28px; }
+    #slide5 .friday-badge { margin-top: 14px !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+<div class="grid-overlay"></div>
+
+<!-- Master Scroll Container -->
+<main class="deck-container">
+
+  <!-- SLIDE 1: Hero -->
+  <section class="slide active" id="slide1">
+    <div class="slide-content">
+      <div class="eyebrow anim-item delay-1">◆ Build Wealth with Discipline</div>
+      <h1 class="display anim-item delay-2">FnO Weekly<span class="grad">Trading Plan</span></h1>
+
+      <div class="trust-row anim-item delay-3">
+        <div class="trust-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="10" width="18" height="10" rx="2"/><path d="M7 10V7a5 5 0 0110 0v3"/></svg>
+          <span>Capital stays in <b>your account</b></span>
+        </div>
+        <div class="trust-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>Always visible &amp; <b>withdrawable anytime</b></span>
+        </div>
+        <div class="trust-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l4-4 4 4 6-6 4 4"/><path d="M15 4h6v6"/></svg>
+          <span>We trade <b>on your behalf</b></span>
+        </div>
+      </div>
+
+      <div class="stat-row anim-item delay-4">
+        <div class="stat-card card-surface stat-neutral">
+          <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg>Weekly Target</div>
+          <div class="num">20%</div><div class="lbl">Gross Target / Week</div>
+        </div>
+        <div class="stat-card card-surface stat-hero">
+          <div class="hero-tag">What You Earn</div>
+          <div class="num">13%</div><div class="lbl">Investor Profit / Week</div>
+        </div>
+        <div class="stat-card card-surface stat-neutral">
+          <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M5 9l7-7 7 7"/></svg>Risk Ceiling</div>
+          <div class="num">20%</div><div class="lbl">Max Drawdown</div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-down anim-item delay-5" onclick="scrollToNextSlide('slide1')" title="Next Slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      <span>Next</span>
+    </div>
+  </section>
+
+  <!-- SLIDE 2: Monthly Projection -->
+  <section class="slide" id="slide2">
+    <div class="slide-content">
+      <div class="eyebrow anim-item delay-1">Projected Return</div>
+      <h1 class="display anim-item delay-2"> Cashflow</h1>
+      <p class="subtitle anim-item delay-2">Weekly withdrawals with principal intact.</p>
+      <div class="big-metric card-surface anim-item delay-3">
+        <div class="figure"> <span>Monthly 52%</span></div>
+        <div style="display:inline-block;margin-top:10px;padding:4px 14px;border-radius:20px;background:rgba(255,255,255,0.05);border:1px solid var(--surface-border);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:700;">Simple &middot; Not Compounded</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:18px;">
+          <div style="display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;padding:10px 20px;border-radius:16px;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);font-size:15px;font-weight:600;line-height:1.5;color:var(--ivory);">
+            <span>4-Week Cumulative Cashflow</span>
+            <span style="display:inline-block;padding:3px 12px;border-radius:20px;background:linear-gradient(90deg, var(--c1), var(--c2));color:#04030a;font-size:12.5px;font-weight:800;letter-spacing:0.3px;">13% Weekly</span>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:2px;">
+            <div style="display:flex;align-items:center;gap:8px;padding:9px 18px;border-radius:30px;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.28);font-size:13px;font-weight:700;color:var(--green);">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M17 2v4M7 2v4M3 10h18"/><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M9 15l2 2 4-4"/></svg>
+              Withdrawn Weekly
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:9px 18px;border-radius:30px;background:rgba(192,132,252,0.08);border:1px solid rgba(192,132,252,0.28);font-size:13px;font-weight:700;color:var(--c2);">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+              Capital Stays Intact
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="week-row anim-item delay-4">
+        <div class="week-pill"><span class="lbl">W1</span> <span class="val">+13%</span></div>
+        <div class="week-pill"><span class="lbl">W2</span> <span class="val">+26%</span></div>
+        <div class="week-pill"><span class="lbl">W3</span> <span class="val">+39%</span></div>
+        <div class="week-pill milestone"><span class="lbl">W4</span> <span class="val">+52%</span></div>
+      </div>
+      
+      <div class="foot-note card-surface anim-item delay-5">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></div>
+        <div>Without compounding, each week adds a clean <b>+13% net cash payout</b> distributed directly to your account, accumulating to a 52% total return over 4 weeks.</div>
+      </div>
+    </div>
+    <div class="scroll-down anim-item delay-5" onclick="scrollToNextSlide('slide2')" title="Next Slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      <span>Next</span>
+    </div>
+  </section>
+
+  <!-- SLIDE 3: Partnership / Split -->
+  <section class="slide" id="slide3">
+    <div class="slide-content">
+      <div class="eyebrow anim-item delay-1">Partnership</div>
+      <h1 class="display anim-item delay-2">Profit Split<span class="grad">Grow Together</span></h1>
+      
+      <div class="split-bar anim-item delay-3">
+        <div class="inv" style="width:65%;">65%</div>
+        <div class="comp" style="width:35%;">35%</div>
+      </div>
+      
+      <div class="split-legend anim-item delay-3">
+        <div class="leg inv"><span class="dot"></span><b>65%</b>&nbsp;Investor</div>
+        <div class="leg comp"><span class="dot"></span><b>35%</b>&nbsp;Company</div>
+      </div>
+      <div class="trio-stack anim-item delay-4">
+        <div class="trio-card-item card-surface">
+          <div class="ic-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6 6 .9-4.5 4.3 1 6-5.5-3-5.5 3 1-6L3 8.9 9 8z"/></svg></div>
+          <div class="trio-body">
+            <div class="t">Flat Split</div>
+            <div class="d">Same rate. No tiers. No changes.</div>
+            <div class="mini-tag c1">No Hidden Tiers</div>
+          </div>
+        </div>
+        <div class="trio-card-item card-surface">
+          <div class="ic-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+          <div class="trio-body">
+            <div class="t">Weekly Pay</div>
+            <div class="d">Fast, reliable weekly payouts.</div>
+            <div class="mini-tag c2">Every Friday</div>
+          </div>
+        </div>
+        <div class="trio-card-item card-surface">
+          <div class="ic-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 12l3 3 5-6"/><circle cx="12" cy="12" r="9"/></svg></div>
+          <div class="trio-body">
+            <div class="t">Aligned</div>
+            <div class="d">Your success drives ours.</div>
+            <div class="mini-tag c3">Growth Together</div>
+          </div>
+        </div>
+      </div>
+      <div class="split-tagline anim-item delay-5">One flat rate. <span>Paid weekly.</span> Aligned always.</div>
+    </div>
+    <div class="scroll-down anim-item delay-5" onclick="scrollToNextSlide('slide3')" title="Next Slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      <span>Next</span>
+    </div>
+  </section>
+
+  <!-- SLIDE 4: Interactive Calculator & Structure -->
+  <section class="slide" id="calcSlide">
+    <div class="slide-content">
+      <div class="eyebrow anim-item delay-1">Breakdown</div>
+      <h1 class="display anim-item delay-2">Profit Sharing<span class="grad">Structure</span></h1>
+      <p class="subtitle anim-item delay-2">20% weekly target &nbsp;·&nbsp; Settled every <b>Friday</b></p>
+      
+      <div class="card-surface calc-box anim-item delay-3">
+
+        <div class="calc-results">
+          <div class="res-card highlight"><div class="lbl">Investor Weekly</div><div class="val" id="investorWeekly">₹13,000</div></div>
+          <div class="res-card"><div class="lbl">Company Weekly</div><div class="val" id="companyWeekly">₹7,000</div></div>
+          <div class="res-card highlight"><div class="lbl">Investor Monthly</div><div class="val" id="investorMonthly">₹52,000</div></div>
+          <div class="res-card"><div class="lbl">Company Monthly</div><div class="val" id="companyMonthly">₹28,000</div></div>
+        </div>
+
+                <div class="slider-label">
+          <span style="display:flex; flex-direction:column; gap:2px;">
+            <span style="font-size:11px; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); font-weight:600;">Investment</span>
+            <span class="val" id="capitalDisplay" style="font-size:22px; color:var(--ivory);">₹1,00,000</span>
+          </span>
+          <span style="display:flex; flex-direction:column; gap:2px; text-align:right;">
+            <span style="font-size:11px; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); font-weight:600;">Weekly Profit</span>
+            <span class="val" id="weeklyTarget" style="font-size:22px; background:linear-gradient(90deg, var(--c1), var(--c2)); -webkit-background-clip:text; color:transparent;">₹20,000</span>
+          </span>
+        </div>
+        <div class="slider-container">
+          <input type="range" id="capitalRange" min="100000" max="2500000" step="100000" value="100000">
+        </div>
+
+      </div>
+
+      <div class="foot-note card-surface anim-item delay-4">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <div>With weekly profit withdrawals, base capital remains constant while cash returns are paid out every Friday.</div>
+      </div>
+    </div>
+    <div class="scroll-down anim-item delay-5" onclick="scrollToNextSlide('calcSlide')" title="Next Slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      <span>Next</span>
+    </div>
+  </section>
+
+  <!-- SLIDE 5: 2 Months Capital Double -->
+  <section class="slide" id="slide5">
+    <div class="slide-content">
+      <div class="eyebrow anim-item delay-1">Growth Estimate</div>
+      <h1 class="display anim-item delay-2">2 Months<span class="grad">Capital Double</span></h1>
+
+      <div class="milestone-callout anim-item delay-2">
+        <div class="milestone-callout-badge">TARGET AT WEEK 8</div>
+        <div class="milestone-callout-num">+104%</div>
+        <div class="milestone-callout-sub">Cumulative investor cash · principal untouched</div>
+      </div>
+
+      <div class="target-chip-row anim-item delay-3">
+        <div class="formula-circle"><div class="n" style="color:var(--c1);">13%</div><div class="l">AVG / WEEK</div></div>
+        <div class="target-chip-x">×</div>
+        <div class="formula-circle"><div class="n">8</div><div class="l">WEEKS</div></div>
+        <div class="target-chip-x">=</div>
+        <div class="formula-circle formula-circle-hero"><div class="n">104%</div><div class="l">CASH TAKEN</div></div>
+      </div>
+
+      <!-- ₹1L infographic — big numbers, minimal text -->
+      <div class="stat-row anim-item delay-3" style="margin-top:22px;">
+        <div class="stat-card card-surface stat-neutral">
+          <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M5 9l7-7 7 7"/></svg>Cash out</div>
+          <div class="num" style="font-size:26px;">₹1.04L</div>
+          <div class="lbl">Withdrawn by W8</div>
+        </div>
+        <div class="stat-card card-surface stat-hero">
+          <div class="hero-tag">₹1L book</div>
+          <div class="num" style="font-size:26px;">₹13K</div>
+          <div class="lbl">Per profitable week</div>
+        </div>
+        <div class="stat-card card-surface stat-neutral">
+          <div class="tick" style="color:var(--c2);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>Stays</div>
+          <div class="num" style="font-size:26px;">₹1L</div>
+          <div class="lbl">Capital intact</div>
+        </div>
+      </div>
+
+      <div class="friday-badge anim-item delay-4" style="margin-top:18px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+        Drawdown weeks: loss recovers first, then profit share
+      </div>
+    </div>
+    <div class="scroll-down anim-item delay-5" onclick="scrollToNextSlide('slide5')" title="Next Slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      <span>Next</span>
+    </div>
+  </section>
+
+  <!-- SLIDE 6: Loss Recovery Mechanism -->
+  <section class="slide" id="slide6">
+    <div class="slide-content">
+      <div class="eyebrow anim-item delay-1">Risk Mitigation</div>
+      <h1 class="display anim-item delay-2">Loss Recovery<span class="grad">Mechanism</span></h1>
+      <p class="subtitle anim-item delay-2">If a week ends in a loss, the next profitable week first recovers the actual loss before profit sharing resumes.</p>
+      
+      <div class="step-row anim-item delay-3">
+        <div class="step card-surface"><div class="num">1</div><div class="tt">Loss Week</div><div class="val" style="color:var(--red);">−₹10,000</div></div>
+        <svg class="step-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <div class="step card-surface"><div class="num">2</div><div class="tt">Profit Week</div><div class="val" style="color:var(--green);">+₹20,000</div></div>
+        <svg class="step-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <div class="step card-surface"><div class="num">3</div><div class="tt">Recover First</div><div class="val" style="color:#facc15;">₹10,000</div></div>
+        <svg class="step-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <div class="step card-surface"><div class="num">4</div><div class="tt">Remain Split</div><div class="val" style="background:linear-gradient(90deg,var(--c1),var(--c2));-webkit-background-clip:text;color:transparent;">₹10,000</div></div>
+      </div>
+
+      <div class="info-box anim-item delay-4"><b>Key rule:</b> Losses are fully recovered from subsequent profits before any profit-sharing split applies to that cycle. This safeguards both investor capital and long-term equity stability.</div>
+    </div>
+    <div class="scroll-down anim-item delay-5" onclick="scrollToNextSlide('slide6')" title="Next Slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      <span>Next</span>
+    </div>
+  </section>
+
+  <!-- SLIDE 7: Eligibility Rules -->
+  <section class="slide" id="slide7">
+    <div class="slide-content">
+      <div class="eyebrow anim-item delay-1">Rules</div>
+      <h1 class="display anim-item delay-2">Profit Sharing<span class="grad">Eligibility</span></h1>
+      <p class="subtitle anim-item delay-2">Settle only when it's real.</p>
+      <div class="rule-list anim-item delay-3">
+        <div class="rule card-surface"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h12"/></svg><div>We track your <b>high-water mark</b> — your previous peak performance.</div></div>
+        <div class="rule card-surface"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M4 19h16M8 15l4-5 3 3 5-7"/></svg><div>Profit sharing is settled only on <b>new highs</b> above that peak.</div></div>
+        <div class="rule card-surface"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><div>Only weeks that surpass the <b>previous high mark</b> are eligible for settlement.</div></div>
+        <div class="rule card-surface"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg><div>No settlement on recoveries — only on <b>new value created</b>.</div></div>
+      </div>
+    </div>
+    <div class="scroll-down anim-item delay-5" onclick="scrollToNextSlide('slide7')" title="Next Slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      <span>Next</span>
+    </div>
+  </section>
+
+  <!-- SLIDE 8: Max Drawdown -->
+  <section class="slide" id="slide8">
+    <div class="slide-content">
+      <div class="eyebrow anim-item delay-1">Risk Control</div>
+      <h1 class="display anim-item delay-2">Max Drawdown</h1>
+      <p class="subtitle anim-item delay-2">Control risk. Protect capital.</p>
+      <div class="big-metric card-surface anim-item delay-3">
+        <div class="figure">20<span>%</span></div>
+        <div class="caption">of capital</div>
+        <div class="pill">MAX DRAWDOWN</div>
+        <div class="bar-track"><div class="bar-fill"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:10px;text-transform:uppercase;"><span>20% Drawdown</span><span>Low Risk</span></div>
+      </div>
+      <p class="subtitle anim-item delay-4" style="margin-top:24px;">₹1L capital → max loss ₹20,000</p>
+      <div class="alert-box anim-item delay-5">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+        <div class="txt"><b>Trading halts</b> at 80% equity. Investor must be prepared before joining.</div>
+      </div>
+    </div>
+    <div class="scroll-down anim-item delay-5" onclick="scrollToNextSlide('slide8')" title="Next Slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      <span>Next</span>
+    </div>
+  </section>
+
+  <!-- SLIDE 9: Risk Disclosure -->
+  <section class="slide" id="slide9">
+    <div class="slide-content">
+      <div class="eyebrow anim-item delay-1">Disclosure</div>
+      <h1 class="display anim-item delay-2">Risk Awareness<span class="grad">& Commitment</span></h1>
+      <p class="subtitle anim-item delay-2">Informed traders. Safer journey.</p>
+      <div class="risk-list anim-item delay-3">
+        <div class="risk-item card-surface"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21l7-14 4 7 3-5 4 12H3z"/></svg></div><div class="body"><b>Substantial Risk</b><p>Trading involves substantial risk of loss and is not suitable for all investors.</p></div></div>
+        <div class="risk-item card-surface"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4l6 6 4-4 8 8M15 6h6v6"/></svg></div><div class="body"><b>20% Drawdown</b><p>Be prepared for potential drawdowns of up to 20% or more.</p></div></div>
+        <div class="risk-item card-surface"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/><path d="M9 9l6 6M15 9l-6 6"/></svg></div><div class="body"><b>No Guarantee</b><p>Past performance is not indicative of future results. Profits are not guaranteed.</p></div></div>
+        <div class="risk-item card-surface"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v5h5M9 13h6M9 17h6"/></svg></div><div class="body"><b>Informational Only</b><p>This content is for informational purposes only and does not constitute financial advice.</p></div></div>
+      </div>
+    </div>
+    <div class="scroll-down anim-item delay-5" onclick="scrollToNextSlide('slide9')" title="Next Slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      <span>Next</span>
+    </div>
+  </section>
+
+  <!-- SLIDE 10: Closing -->
+  <section class="slide" id="slide10" style="text-align:center; position: relative;">
+    <div class="slide-content">
+      <div class="hero-icon anim-item delay-1">
+        <svg class="hero-icon-svg" viewBox="0 0 24 24" fill="none" stroke="#04030a" stroke-width="2.4"><path d="M12 3l3.5 7L12 21l-3.5-11z"/></svg>
+      </div>
+      <h1 class="display anim-item delay-2">Discipline Today<span class="grad">Wealth Tomorrow</span></h1>
+      <p class="subtitle anim-item delay-3" style="margin-top:16px;">Trade with a plan. Grow with us.</p>
+      <button class="cta anim-item delay-4">Trade Smarter · Grow Faster</button>
+    </div>
+    
+    <div onclick="document.querySelector('.deck-container').scrollTo({top: 0, behavior: 'smooth'});" class="scroll-down anim-item delay-5" title="Back to Top">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: bounceUp 2s infinite;"><path d="M18 15l-6-6-6 6"/></svg>
+      <span>Top</span>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // Fix for mobile in-app browsers (e.g. WhatsApp) where 100vh is unstable
+  // due to the address bar showing/hiding. Sets an accurate --vh custom property.
+  function setRealVH() {
+    document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
+  }
+  setRealVH();
+  window.addEventListener('resize', setRealVH);
+  window.addEventListener('orientationchange', setRealVH);
+
+  // Helper to scroll smoothly to the next sequential slide
+  function scrollToNextSlide(currentSlideId) {
+    const currentEl = document.getElementById(currentSlideId);
+    if (currentEl && currentEl.nextElementSibling) {
+      currentEl.nextElementSibling.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  // Intersection Observer to toggle the 'active' class on slides for staggered entrance animations
+  document.addEventListener('DOMContentLoaded', () => {
+    const slides = document.querySelectorAll('section.slide');
+
+    if (!('IntersectionObserver' in window)) {
+      // No IntersectionObserver support: reveal everything immediately
+      // instead of leaving .anim-item elements stuck at opacity:0 forever.
+      slides.forEach(slide => slide.classList.add('active'));
+    } else {
+      const observerOptions = {
+        root: document.querySelector('.deck-container'),
+        threshold: 0.5
+      };
+
+      const slideObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          } else {
+            entry.target.classList.remove('active');
+          }
+        });
+      }, observerOptions);
+
+      slides.forEach(slide => {
+        slideObserver.observe(slide);
+      });
+    }
+
+    // Calculator Logic
+    const slider = document.getElementById('capitalRange');
+    const calcSlide = document.getElementById('calcSlide');
+    
+    function formatINR(val) {
+      return '₹' + Number(val).toLocaleString('en-IN');
+    }
+
+    function updateCalculator(capital) {
+      const weeklyProfit = capital * 0.20;
+      const investorW = weeklyProfit * 0.65;
+      const companyW = weeklyProfit * 0.35;
+      const investorM = investorW * 4;
+      const companyM = companyW * 4;
+
+      const capEl = document.getElementById('capitalDisplay');
+      const targetEl = document.getElementById('weeklyTarget');
+      const invWeekEl = document.getElementById('investorWeekly');
+      const compWeekEl = document.getElementById('companyWeekly');
+      const invMonEl = document.getElementById('investorMonthly');
+      const compMonEl = document.getElementById('companyMonthly');
+
+      if (capEl) capEl.innerText = formatINR(capital);
+      if (targetEl) targetEl.innerText = formatINR(weeklyProfit);
+      if (invWeekEl) invWeekEl.innerText = formatINR(investorW);
+      if (compWeekEl) compWeekEl.innerText = formatINR(companyW);
+      if (invMonEl) invMonEl.innerText = formatINR(investorM);
+      if (compMonEl) compMonEl.innerText = formatINR(companyM);
+    }
+
+    if (slider) {
+      slider.addEventListener('input', (e) => {
+        updateCalculator(Number(e.target.value));
+      });
+
+      slider.addEventListener('change', (e) => {
+        updateCalculator(Number(e.target.value));
+      });
+      
+      // Initial value
+      slider.value = 100000;
+      updateCalculator(100000);
+
+      let hasAnimatedCalc = false;
+
+      if (!('IntersectionObserver' in window)) {
+        // No IntersectionObserver support: skip the reveal animation,
+        // the calculator itself already works via updateCalculator() above.
+        return;
+      }
+
+      const calcObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !hasAnimatedCalc) {
+            hasAnimatedCalc = true;
+
+            // =====================================================
+            // CALCULATOR ANIMATION
+            // 100,000 → 1,000,000 → 500,000
+            // =====================================================
+
+            const startVal = 100000;
+            const peakVal = 1000000;
+            const finalVal = 500000;
+
+            // Duration for each phase
+            const durationUp = 4000;     // 100K → 1M
+            const durationDown = 2200;   // 1M → 500K
+
+            // Generic animation function
+            function animateValue(from, to, duration, onComplete) {
+              let startTime = null;
+
+              function stepAnimation(timestamp) {
+                if (!startTime) {
+                  startTime = timestamp;
+                }
+
+                const elapsed = timestamp - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Smooth ease-out
+                const easeProgress = progress * (2 - progress);
+
+                const currentVal =
+                  Math.round(
+                    (from + (to - from) * easeProgress) / 100000
+                  ) * 100000;
+
+                slider.value = currentVal;
+                updateCalculator(currentVal);
+
+                if (progress < 1) {
+                  requestAnimationFrame(stepAnimation);
+                } else {
+                  // Make sure the exact target value is reached
+                  slider.value = to;
+                  updateCalculator(to);
+
+                  if (onComplete) {
+                    onComplete();
+                  }
+                }
+              }
+
+              requestAnimationFrame(stepAnimation);
+            }
+
+            // =====================================================
+            // PHASE 1
+            // 100,000 → 1,000,000
+            // =====================================================
+
+            animateValue(
+              startVal,
+              peakVal,
+              durationUp,
+              () => {
+
+                // ===============================================
+                // PHASE 2
+                // 1,000,000 → 500,000
+                // ===============================================
+
+                animateValue(
+                  peakVal,
+                  finalVal,
+                  durationDown
+                );
+
+              }
+            );
+          }
+        });
+      }, {
+        threshold: 0.5
+      });
+
+      if (calcSlide) {
+        calcObserver.observe(calcSlide);
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
