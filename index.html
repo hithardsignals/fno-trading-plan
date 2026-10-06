@@ -61,7 +61,7 @@ svg text{fill:#f4f6ff;font-weight:500}
 <div class="tz" id="tz"></div><button class="rp" id="rp">↻ Replay</button>
 </div>
 <script>
-const st=document.getElementById('st'),sc=[...st.querySelectorAll('.sc')],D=[4, 4.5, 4.5, 4.5, 4.5, 5, 5.5, 5.5, 5.5, 5, 5.5],sg=document.getElementById('sg'),no=document.getElementById('no');
+const st=document.getElementById('st'),sc=[...st.querySelectorAll('.sc')],D=[6, 6.5, 6.5, 6.5, 6.5, 5, 6.5, 6.5, 6.5, 6, 6.5],sg=document.getElementById('sg'),no=document.getElementById('no');
 sc.forEach(s=>{sg.insertAdjacentHTML('beforeend','<b><i></i></b>');
  const v=s.querySelector('svg'),bars=[...v.querySelectorAll('rect[fill="url(#lv)"],rect[fill="url(#lv2)"],rect[fill="url(#lv3)"],g[fill="url(#lv)"] rect,g[fill="#22d3ee"] rect,g[fill="#ec4899"] rect,g[fill="#a855f7"] rect,rect[fill="#ec4899"]')];
  bars.forEach((r,i)=>{r.classList.add('gr');r.style.setProperty('--d',(.4+i*.12)+'s')});
